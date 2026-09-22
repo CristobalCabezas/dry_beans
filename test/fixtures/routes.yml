@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  code: MyString
+  route_date: 2026-09-21
+  status: 1
+
+two:
+  code: MyString
+  route_date: 2026-09-21
+  status: 1
