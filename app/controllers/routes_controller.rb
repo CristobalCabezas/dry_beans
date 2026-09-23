@@ -10,7 +10,7 @@ class RoutesController < ApplicationController
             end
 
             result = @routes.as_json(include: { trips: { include: :delivery_events } })
-            render json: { status: 200, data: result, errors: [] }
+            render json: { status: 200, data: result, errors: [] } and return
         rescue => e
             render json: { status: 500, data: [], errors: [e.message] }, status: :internal_server_error and return
         end
@@ -32,9 +32,7 @@ class RoutesController < ApplicationController
 
     def create
         begin
-            # Generate a unique code for the route
-            code = SecureRandom.alphanumeric(10).upcase
-            @route = Route.new(route_params.merge(code: code))
+            @route = Route.new(route_params)
             if @route.save
                 render json: { status: 201, data: [@route], errors: [] }, status: :created and return
             else
