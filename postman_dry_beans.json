@@ -1,0 +1,268 @@
+{
+  "info": {
+    "name": "dry_beans",
+    "description": null,
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get All Routes",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "http://localhost:3000/routes",
+          "protocol": "http",
+          "host": [
+            "localhost:3000"
+          ],
+          "path": [
+            "routes"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "Get Route by id",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "http://127.0.0.1:3000/routes/12",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1:3000"
+          ],
+          "path": [
+            "routes",
+            "12"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "Create Route",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "description": "",
+            "disabled": false,
+            "type": "default"
+          }
+        ],
+        "description": "",
+        "url": {
+          "raw": "http://127.0.0.1:3000/routes",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1:3000"
+          ],
+          "path": [
+            "routes"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"code\": \"RUTA-VALPO-001\",\n  \"route_date\": \"2026-11-23\",\n  \"status\": \"completed\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Get Trip by Route Id",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "description": "",
+            "disabled": false,
+            "type": "default"
+          }
+        ],
+        "description": "",
+        "url": {
+          "raw": "http://127.0.0.1:3000/routes/12/trips",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1:3000"
+          ],
+          "path": [
+            "routes",
+            "12",
+            "trips"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Create Trip by Route Id",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "description": "",
+            "disabled": false,
+            "type": "default"
+          }
+        ],
+        "description": "",
+        "url": {
+          "raw": "http://127.0.0.1:3000/routes/12/trips",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1:3000"
+          ],
+          "path": [
+            "routes",
+            "12",
+            "trips"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sequence\": 2,\n  \"driver_name\": \"Juan Fulanito\",\n  \"status\": \"completed\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Get Delivery Event by Trip Id",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "description": "",
+            "disabled": false,
+            "type": "default"
+          }
+        ],
+        "description": "",
+        "url": {
+          "raw": "http://127.0.0.1:3000/trips/20/delivery_events",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1:3000"
+          ],
+          "path": [
+            "trips",
+            "20",
+            "delivery_events"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Create Delivery Event by Trip Id",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "description": "",
+            "disabled": false,
+            "type": "default"
+          }
+        ],
+        "description": "",
+        "url": {
+          "raw": "http://127.0.0.1:3000/trips/21/delivery_events",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1:3000"
+          ],
+          "path": [
+            "trips",
+            "21",
+            "delivery_events"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"delivery_event\": {\n    \"event_type\": \"delivery\",\n    \"status\": \"pending\",\n    \"recipient_name\": \"María Soto\",\n    \"address\": \"Av. Providencia 1234, Santiago\",\n    \"scheduled_at\": \"2026-09-24T15:30:00\",\n    \"notes\": \"Dejar en conserjería si no hay nadie\"\n  }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "variable": []
+}
