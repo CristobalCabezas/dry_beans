@@ -24,7 +24,7 @@ class DeliveryEventsController < ApplicationController
             trip = Trip.find(params[:trip_id])
             @delivery_event = trip.delivery_events.new(delivery_event_params)
             if @delivery_event.save
-                render json: @delivery_event, status: :created
+                render json: { status: 201, data: [@delivery_event], errors: [] }, status: :created
             else
                 errors = @delivery_event.errors.full_messages
                 render json: { status: 422, data: [], errors: errors }, status: :unprocessable_entity and return
