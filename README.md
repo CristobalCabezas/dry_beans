@@ -1,5 +1,7 @@
 # dry_beans
 
+🇪🇸 **Español** | 🇺🇸 [English](README.en.md)
+
 API backend desarrollada como parte del desafío técnico para la posición de Backend Developer en Drivin. Modela una ruta de reparto compuesta por múltiples viajes, cada uno con múltiples eventos de entrega y/o retiro.
 
 ## Stack y versiones
