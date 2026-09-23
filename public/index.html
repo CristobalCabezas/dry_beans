@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dry Beans · Panel de Rutas</title>
+<style>
+  :root {
+    --bg: #f4f6f8;
+    --panel: #ffffff;
+    --border: #e2e6ea;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --danger: #dc2626;
+    --danger-bg: #fef2f2;
+    --success: #059669;
+    --amber: #d97706;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+  header {
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+  header p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+  .breadcrumbs {
+    padding: 12px 24px 0;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .breadcrumbs button {
+    background: none;
+    border: none;
+    color: var(--primary);
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 0;
+  }
+  .board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    padding: 16px 24px 32px;
+    align-items: start;
+  }
+  @media (max-width: 980px) {
+    .board { grid-template-columns: 1fr; }
+  }
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    min-height: 120px;
+  }
+  .panel h2 {
+    margin: 0 0 12px;
+    font-size: 1rem;
+  }
+  .panel h2 small {
+    color: var(--muted);
+    font-weight: normal;
+  }
+  .empty-state {
+    color: var(--muted);
+    font-size: 0.9rem;
+    padding: 12px 0;
+  }
+  .error-banner {
+    background: var(--danger-bg);
+    color: var(--danger);
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+  }
+  .card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .card:hover {
+    border-color: var(--primary);
+    background: #f8faff;
+  }
+  .card.selected {
+    border-color: var(--primary);
+    background: #eff4ff;
+  }
+  .card-title {
+    font-weight: 600;
+    font-size: 0.92rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-meta {
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin-top: 3px;
+  }
+  .badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .badge-planned, .badge-pending { background: #eef2ff; color: #4338ca; }
+  .badge-in_progress { background: #fff7ed; color: var(--amber); }
+  .badge-completed { background: #ecfdf5; color: var(--success); }
+  .badge-failed { background: var(--danger-bg); color: var(--danger); }
+  .badge-delivery { background: #eff6ff; color: var(--primary-dark); }
+  .badge-pickup { background: #f5f3ff; color: #6d28d9; }
+
+  form.inline-form {
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+  }
+  form.inline-form h3 {
+    margin: 0 0 10px;
+    font-size: 0.85rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .field {
+    margin-bottom: 10px;
+  }
+  .field label {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    padding: 7px 9px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.88rem;
+    font-family: inherit;
+    background: #fff;
+    color: var(--text);
+  }
+  .field textarea { resize: vertical; min-height: 50px; }
+  button.submit {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 0.88rem;
+    cursor: pointer;
+    width: 100%;
+  }
+  button.submit:hover { background: var(--primary-dark); }
+  button.submit:disabled { background: #93b5f5; cursor: not-allowed; }
+  .hint {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+  .placeholder-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 0.88rem;
+    text-align: center;
+    height: 100%;
+    min-height: 200px;
+    padding: 24px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Dry Beans · Panel de Rutas</h1>
+  <p>Visualiza y crea rutas, viajes y entregas/retiros</p>
+</header>
+
+<div class="breadcrumbs" id="breadcrumbs"></div>
+
+<div class="board">
+  <section class="panel" id="routes-panel">
+    <h2>Rutas</h2>
+    <div id="routes-error"></div>
+    <div class="card-list" id="routes-list"></div>
+    <form class="inline-form" id="route-form">
+      <h3>Nueva ruta</h3>
+      <div class="field">
+        <label for="route-code">Código</label>
+        <input type="text" id="route-code" name="code" required placeholder="R-001">
+      </div>
+      <div class="field">
+        <label for="route-date">Fecha</label>
+        <input type="date" id="route-date" name="route_date" required>
+      </div>
+      <div class="field">
+        <label for="route-status">Estado</label>
+        <select id="route-status" name="status">
+          <option value="planned">Planificada</option>
+          <option value="in_progress">En curso</option>
+          <option value="completed">Completada</option>
+        </select>
+      </div>
+      <button type="submit" class="submit">Crear ruta</button>
+    </form>
+  </section>
+
+  <section class="panel" id="trips-panel">
+    <div id="trips-placeholder" class="placeholder-panel">Selecciona una ruta para ver sus viajes</div>
+    <div id="trips-content" style="display:none">
+      <h2>Viajes <small id="trips-subtitle"></small></h2>
+      <div id="trips-error"></div>
+      <div class="card-list" id="trips-list"></div>
+      <form class="inline-form" id="trip-form">
+        <h3>Nuevo viaje</h3>
+        <div class="field">
+          <label for="trip-sequence">Secuencia</label>
+          <input type="number" id="trip-sequence" name="sequence" min="1" required placeholder="1">
+        </div>
+        <div class="field">
+          <label for="trip-driver">Conductor</label>
+          <input type="text" id="trip-driver" name="driver_name" required placeholder="Nombre del conductor">
+        </div>
+        <div class="field">
+          <label for="trip-status">Estado</label>
+          <select id="trip-status" name="status">
+            <option value="pending">Pendiente</option>
+            <option value="in_progress">En curso</option>
+            <option value="completed">Completado</option>
+          </select>
+        </div>
+        <button type="submit" class="submit">Crear viaje</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="panel" id="events-panel">
+    <div id="events-placeholder" class="placeholder-panel">Selecciona un viaje para ver sus entregas/retiros</div>
+    <div id="events-content" style="display:none">
+      <h2>Entregas / Retiros <small id="events-subtitle"></small></h2>
+      <div id="events-error"></div>
+      <div class="card-list" id="events-list"></div>
+      <form class="inline-form" id="event-form">
+        <h3>Nueva entrega/retiro</h3>
+        <div class="field">
+          <label for="event-type">Tipo</label>
+          <select id="event-type" name="event_type">
+            <option value="delivery">Entrega</option>
+            <option value="pickup">Retiro</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="event-status">Estado</label>
+          <select id="event-status" name="status">
+            <option value="pending">Pendiente</option>
+            <option value="completed">Completado</option>
+            <option value="failed">Fallido</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="event-recipient">Nombre destinatario</label>
+          <input type="text" id="event-recipient" name="recipient_name" required placeholder="Nombre completo">
+        </div>
+        <div class="field">
+          <label for="event-address">Dirección</label>
+          <input type="text" id="event-address" name="address" required placeholder="Calle 123, Comuna">
+        </div>
+        <div class="field">
+          <label for="event-scheduled">Programado para</label>
+          <input type="datetime-local" id="event-scheduled" name="scheduled_at">
+        </div>
+        <div class="field">
+          <label for="event-notes">Notas</label>
+          <textarea id="event-notes" name="notes" placeholder="Observaciones (opcional)"></textarea>
+        </div>
+        <button type="submit" class="submit">Crear entrega/retiro</button>
+      </form>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  const ROUTE_STATUS_LABELS = { planned: 'Planificada', in_progress: 'En curso', completed: 'Completada' };
+  const TRIP_STATUS_LABELS = { pending: 'Pendiente', in_progress: 'En curso', completed: 'Completado' };
+  const EVENT_STATUS_LABELS = { pending: 'Pendiente', completed: 'Completado', failed: 'Fallido' };
+  const EVENT_TYPE_LABELS = { delivery: 'Entrega', pickup: 'Retiro' };
+
+  const state = {
+    routes: [],
+    selectedRouteId: null,
+    trips: [],
+    selectedTripId: null,
+    deliveryEvents: [],
+  };
+
+  async function apiRequest(url, options) {
+    let response;
+    try {
+      response = await fetch(url, options);
+    } catch (err) {
+      return { status: 0, data: [], errors: ['No se pudo conectar con la API: ' + err.message] };
+    }
+    let body;
+    try {
+      body = await response.json();
+    } catch (err) {
+      body = { status: response.status, data: [], errors: ['Respuesta inválida del servidor'] };
+    }
+    return body;
+  }
+
+  function fmtDate(value) {
+    if (!value) return '—';
+    const d = new Date(value);
+    if (isNaN(d)) return value;
+    return d.toLocaleDateString('es-CL');
+  }
+
+  function fmtDateTime(value) {
+    if (!value) return '—';
+    const d = new Date(value);
+    if (isNaN(d)) return value;
+    return d.toLocaleString('es-CL');
+  }
+
+  function badge(cssKey, label) {
+    return `<span class="badge badge-${cssKey}">${label}</span>`;
+  }
+
+  function showError(containerId, message) {
+    const el = document.getElementById(containerId);
+    el.innerHTML = message ? `<div class="error-banner">${message}</div>` : '';
+  }
+
+  function renderBreadcrumbs() {
+    const el = document.getElementById('breadcrumbs');
+    const parts = ['<button id="crumb-root" type="button">Rutas</button>'];
+    const route = state.routes.find(r => r.id === state.selectedRouteId);
+    if (route) {
+      parts.push(' / ');
+      parts.push(`<button id="crumb-route" type="button">Ruta ${route.code}</button>`);
+    }
+    const trip = state.trips.find(t => t.id === state.selectedTripId);
+    if (route && trip) {
+      parts.push(' / ');
+      parts.push(`<span>Viaje #${trip.sequence}</span>`);
+    }
+    el.innerHTML = parts.join('');
+    const rootBtn = document.getElementById('crumb-root');
+    if (rootBtn) rootBtn.addEventListener('click', () => { deselectRoute(); });
+    const routeBtn = document.getElementById('crumb-route');
+    if (routeBtn) routeBtn.addEventListener('click', () => { deselectTrip(); });
+  }
+
+  // ---------- Routes ----------
+
+  async function loadRoutes() {
+    const body = await apiRequest('/routes');
+    showError('routes-error', null);
+    if (body.status === 200) {
+      state.routes = body.data;
+    } else if (body.status === 404) {
+      state.routes = [];
+    } else {
+      state.routes = [];
+      showError('routes-error', (body.errors && body.errors[0]) || 'Error al cargar rutas');
+    }
+    renderRoutes();
+    renderBreadcrumbs();
+  }
+
+  function renderRoutes() {
+    const list = document.getElementById('routes-list');
+    if (state.routes.length === 0) {
+      list.innerHTML = '<div class="empty-state">No hay rutas registradas todavía.</div>';
+      return;
+    }
+    list.innerHTML = state.routes.map(route => {
+      const tripsCount = (route.trips || []).length;
+      const selected = route.id === state.selectedRouteId ? ' selected' : '';
+      return `
+        <div class="card${selected}" data-route-id="${route.id}">
+          <div class="card-title">
+            <span>${route.code}</span>
+            ${badge(route.status, ROUTE_STATUS_LABELS[route.status] || route.status)}
+          </div>
+          <div class="card-meta">${fmtDate(route.route_date)} · ${tripsCount} viaje(s)</div>
+        </div>`;
+    }).join('');
+    list.querySelectorAll('[data-route-id]').forEach(card => {
+      card.addEventListener('click', () => selectRoute(Number(card.dataset.routeId)));
+    });
+  }
+
+  async function selectRoute(routeId) {
+    state.selectedRouteId = routeId;
+    state.selectedTripId = null;
+    state.trips = [];
+    state.deliveryEvents = [];
+    renderRoutes();
+    document.getElementById('events-content').style.display = 'none';
+    document.getElementById('events-placeholder').style.display = 'flex';
+    await loadTrips(routeId);
+    renderBreadcrumbs();
+  }
+
+  function deselectRoute() {
+    state.selectedRouteId = null;
+    state.selectedTripId = null;
+    state.trips = [];
+    state.deliveryEvents = [];
+    renderRoutes();
+    document.getElementById('trips-content').style.display = 'none';
+    document.getElementById('trips-placeholder').style.display = 'flex';
+    document.getElementById('events-content').style.display = 'none';
+    document.getElementById('events-placeholder').style.display = 'flex';
+    renderBreadcrumbs();
+  }
+
+  document.getElementById('route-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitBtn = e.target.querySelector('button');
+    submitBtn.disabled = true;
+    const payload = {
+      route: {
+        code: document.getElementById('route-code').value,
+        route_date: document.getElementById('route-date').value,
+        status: document.getElementById('route-status').value,
+      }
+    };
+    const body = await apiRequest('/routes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    submitBtn.disabled = false;
+    if (body.status === 201) {
+      e.target.reset();
+      document.getElementById('route-status').value = 'planned';
+      showError('routes-error', null);
+      await loadRoutes();
+    } else {
+      showError('routes-error', (body.errors && body.errors.join(', ')) || 'No se pudo crear la ruta');
+    }
+  });
+
+  // ---------- Trips ----------
+
+  async function loadTrips(routeId) {
+    const body = await apiRequest(`/routes/${routeId}/trips`);
+    showError('trips-error', null);
+    if (body.status === 200) {
+      state.trips = body.data;
+    } else if (body.status === 404) {
+      state.trips = [];
+      if (body.errors && body.errors[0] === 'Route not found') {
+        showError('trips-error', 'La ruta seleccionada ya no existe.');
+      }
+    } else {
+      state.trips = [];
+      showError('trips-error', (body.errors && body.errors[0]) || 'Error al cargar viajes');
+    }
+    document.getElementById('trips-placeholder').style.display = 'none';
+    document.getElementById('trips-content').style.display = 'block';
+    const route = state.routes.find(r => r.id === routeId);
+    document.getElementById('trips-subtitle').textContent = route ? `de la ruta ${route.code}` : '';
+    renderTrips();
+  }
+
+  function renderTrips() {
+    const list = document.getElementById('trips-list');
+    if (state.trips.length === 0) {
+      list.innerHTML = '<div class="empty-state">Esta ruta todavía no tiene viajes.</div>';
+      return;
+    }
+    list.innerHTML = state.trips.map(trip => {
+      const eventsCount = (trip.delivery_events || []).length;
+      const selected = trip.id === state.selectedTripId ? ' selected' : '';
+      return `
+        <div class="card${selected}" data-trip-id="${trip.id}">
+          <div class="card-title">
+            <span>Viaje #${trip.sequence}</span>
+            ${badge(trip.status, TRIP_STATUS_LABELS[trip.status] || trip.status)}
+          </div>
+          <div class="card-meta">${trip.driver_name}${eventsCount ? ' · ' + eventsCount + ' entrega(s)/retiro(s)' : ''}</div>
+        </div>`;
+    }).join('');
+    list.querySelectorAll('[data-trip-id]').forEach(card => {
+      card.addEventListener('click', () => selectTrip(Number(card.dataset.tripId)));
+    });
+  }
+
+  async function selectTrip(tripId) {
+    state.selectedTripId = tripId;
+    state.deliveryEvents = [];
+    renderTrips();
+    await loadDeliveryEvents(tripId);
+    renderBreadcrumbs();
+  }
+
+  function deselectTrip() {
+    state.selectedTripId = null;
+    state.deliveryEvents = [];
+    renderTrips();
+    document.getElementById('events-content').style.display = 'none';
+    document.getElementById('events-placeholder').style.display = 'flex';
+    renderBreadcrumbs();
+  }
+
+  document.getElementById('trip-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!state.selectedRouteId) return;
+    const submitBtn = e.target.querySelector('button');
+    submitBtn.disabled = true;
+    const payload = {
+      trip: {
+        sequence: document.getElementById('trip-sequence').value,
+        driver_name: document.getElementById('trip-driver').value,
+        status: document.getElementById('trip-status').value,
+      }
+    };
+    const body = await apiRequest(`/routes/${state.selectedRouteId}/trips`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    submitBtn.disabled = false;
+    if (body.status === 201) {
+      e.target.reset();
+      document.getElementById('trip-status').value = 'pending';
+      showError('trips-error', null);
+      await loadTrips(state.selectedRouteId);
+      await loadRoutes();
+      state.selectedRouteId = state.selectedRouteId;
+      renderRoutes();
+    } else {
+      showError('trips-error', (body.errors && body.errors.join(', ')) || 'No se pudo crear el viaje');
+    }
+  });
+
+  // ---------- Delivery events ----------
+
+  async function loadDeliveryEvents(tripId) {
+    const body = await apiRequest(`/trips/${tripId}/delivery_events`);
+    showError('events-error', null);
+    if (body.status === 200) {
+      state.deliveryEvents = body.data;
+    } else if (body.status === 404) {
+      state.deliveryEvents = [];
+      if (body.errors && body.errors[0] === 'Trip not found') {
+        showError('events-error', 'El viaje seleccionado ya no existe.');
+      }
+    } else {
+      state.deliveryEvents = [];
+      showError('events-error', (body.errors && body.errors[0]) || 'Error al cargar entregas/retiros');
+    }
+    document.getElementById('events-placeholder').style.display = 'none';
+    document.getElementById('events-content').style.display = 'block';
+    const trip = state.trips.find(t => t.id === tripId);
+    document.getElementById('events-subtitle').textContent = trip ? `del viaje #${trip.sequence}` : '';
+    renderDeliveryEvents();
+  }
+
+  function renderDeliveryEvents() {
+    const list = document.getElementById('events-list');
+    if (state.deliveryEvents.length === 0) {
+      list.innerHTML = '<div class="empty-state">Este viaje todavía no tiene entregas ni retiros.</div>';
+      return;
+    }
+    list.innerHTML = state.deliveryEvents.map(ev => `
+      <div class="card" style="cursor:default">
+        <div class="card-title">
+          <span>${ev.recipient_name}</span>
+          ${badge(ev.event_type, EVENT_TYPE_LABELS[ev.event_type] || ev.event_type)}
+        </div>
+        <div class="card-meta">${ev.address}</div>
+        <div class="card-meta">
+          ${badge(ev.status, EVENT_STATUS_LABELS[ev.status] || ev.status)}
+          · Programado: ${fmtDateTime(ev.scheduled_at)}
+        </div>
+        ${ev.notes ? `<div class="card-meta">📝 ${ev.notes}</div>` : ''}
+      </div>`).join('');
+  }
+
+  document.getElementById('event-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!state.selectedTripId) return;
+    const submitBtn = e.target.querySelector('button');
+    submitBtn.disabled = true;
+    const scheduledAt = document.getElementById('event-scheduled').value;
+    const payload = {
+      delivery_event: {
+        event_type: document.getElementById('event-type').value,
+        status: document.getElementById('event-status').value,
+        recipient_name: document.getElementById('event-recipient').value,
+        address: document.getElementById('event-address').value,
+        scheduled_at: scheduledAt || null,
+        notes: document.getElementById('event-notes').value,
+      }
+    };
+    const body = await apiRequest(`/trips/${state.selectedTripId}/delivery_events`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    submitBtn.disabled = false;
+    if (body.status === 201) {
+      e.target.reset();
+      document.getElementById('event-type').value = 'delivery';
+      document.getElementById('event-status').value = 'pending';
+      showError('events-error', null);
+      await loadDeliveryEvents(state.selectedTripId);
+      await loadTrips(state.selectedRouteId);
+    } else {
+      showError('events-error', (body.errors && body.errors.join(', ')) || 'No se pudo crear la entrega/retiro');
+    }
+  });
+
+  loadRoutes();
+})();
+</script>
+</body>
+</html>
