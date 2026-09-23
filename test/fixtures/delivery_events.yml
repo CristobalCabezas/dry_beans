@@ -1,21 +1,79 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
-
 one:
   trip: one
-  kind: 1
+  event_type: 0
   status: 1
-  recipient_name: MyString
-  address: MyString
+  recipient_name: Bethany Bolton
+  address: Avenida Apoquindo 3461
   scheduled_at: 2026-09-21 23:03:05
   completed_at: 2026-09-21 23:03:05
-  notes: MyText
+  notes: null
 
 two:
-  trip: two
-  kind: 1
-  status: 1
-  recipient_name: MyString
-  address: MyString
+  trip: one
+  event_type: 1
+  status: 2
+  recipient_name: Tamsin Field
+  address: Avenida Los Leones 3999
   scheduled_at: 2026-09-21 23:03:05
   completed_at: 2026-09-21 23:03:05
-  notes: MyText
+  notes: null
+
+three:
+  trip: two
+  event_type: 0
+  status: 1
+  recipient_name: Ruby Law
+  address: Avenida Irarrázaval 2074
+  scheduled_at: 2026-09-21 23:03:05
+  completed_at: 2026-09-21 23:03:05
+  notes: Entrega de 2 cajas de 10kg cada una. Por favor, manejar con cuidado.
+
+four:
+  trip: two
+  event_type: 0
+  status: 0
+  recipient_name: Vinny King
+  address: Avenida Libertador Bernardo OHiggins 4584
+  scheduled_at: 2026-09-21 23:03:05
+  completed_at: 2026-09-21 23:03:05
+  notes: Material frágil. Entregar en la recepción del edificio.
+
+five:
+  trip: three
+  event_type: 1
+  status: 2
+  recipient_name: Elis Bright
+  address: Avenida Providencia 5656
+  scheduled_at: 2026-09-21 23:03:05
+  completed_at: 2026-09-21 23:03:05
+  notes: Dejar en portería.
+
+six:
+  trip: three
+  event_type: 1
+  status: 2
+  recipient_name: Albert Wilkinson
+  address: Avenida Suecia 972
+  scheduled_at: 2026-09-21 23:03:05
+  completed_at: 2026-09-21 23:03:05
+  notes: Llamar al llegar. Entregar en mano.
+
+seven:
+  trip: four
+  event_type: 1
+  status: 1
+  recipient_name: Elissa Simon
+  address: Avenida Pedro de Valdivia 5527
+  scheduled_at: 2026-09-21 23:03:05
+  completed_at: 2026-09-21 23:03:05
+  notes: null
+
+eight:
+  trip: four
+  event_type: 0
+  status: 1
+  recipient_name: Ivy Pineda
+  address: Avenida Grecia 7385
+  scheduled_at: 2026-09-21 23:03:05
+  completed_at: 2026-09-21 23:03:05
+  notes: Entregar en la oficina de recepción. No dejar en la puerta.
