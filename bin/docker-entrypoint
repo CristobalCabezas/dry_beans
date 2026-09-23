@@ -1,5 +1,18 @@
 #!/bin/bash -e
 
+# Rails needs a secret_key_base to boot in production. This repo has no
+# config/master.key to decrypt credentials.yml.enc, so generate one on first
+# boot and persist it alongside the database in storage/ (the volume mounted
+# in production) unless RAILS_MASTER_KEY or SECRET_KEY_BASE was already given.
+if [ -z "${SECRET_KEY_BASE}" ] && [ -z "${RAILS_MASTER_KEY}" ] && [ ! -f config/master.key ]; then
+  SECRET_KEY_BASE_FILE="storage/secret_key_base"
+  if [ ! -f "$SECRET_KEY_BASE_FILE" ]; then
+    mkdir -p storage
+    ruby -rsecurerandom -e "print SecureRandom.hex(64)" > "$SECRET_KEY_BASE_FILE"
+  fi
+  export SECRET_KEY_BASE="$(cat "$SECRET_KEY_BASE_FILE")"
+fi
+
 # If running the rails server then create or migrate existing database
 if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
   ./bin/rails db:prepare

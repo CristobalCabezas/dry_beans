@@ -3,7 +3,13 @@
 
 # This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
 # docker build -t dry_beans .
-# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name dry_beans dry_beans
+# docker run -d -p 3000:80 --name dry_beans dry_beans
+#
+# No RAILS_MASTER_KEY is required to start the container: this repo ships with
+# credentials.yml.enc but no config/master.key, so bin/docker-entrypoint generates
+# and persists its own SECRET_KEY_BASE on first boot when neither is provided.
+# If you do have a real config/master.key (e.g. after re-encrypting credentials),
+# pass it with -e RAILS_MASTER_KEY=<value from config/master.key> instead.
 
 # For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
 
@@ -25,7 +31,8 @@ ENV RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
     BUNDLE_PATH="/usr/local/bundle" \
     BUNDLE_WITHOUT="development" \
-    LD_PRELOAD="/usr/local/lib/libjemalloc.so"
+    LD_PRELOAD="/usr/local/lib/libjemalloc.so" \
+    SOLID_QUEUE_IN_PUMA="true"
 
 # Throw-away build stage to reduce size of final image
 FROM base AS build
